@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Samuca Intro</title>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0b12;--ring:#ff3b3b;--ring2:#ffcf33;--txt:#fff;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);overflow:hidden;font-family:'Luckiest Guy',system-ui,sans-serif}
+  .stage{position:fixed;inset:0;display:grid;place-items:center;
+    background:radial-gradient(circle at center,#1a1a2e 0%,var(--bg) 70%)}
+  /* Anéis concêntricos estilo Looney Tunes */
+  .rings{position:absolute;width:300vmax;height:300vmax;border-radius:50%;
+    background:repeating-radial-gradient(circle,var(--ring) 0 4vmax,var(--ring2) 4vmax 8vmax,#ff7a1a 8vmax 12vmax);
+    transform:scale(0);opacity:.95}
+  /* Círculo central que se expande e revela o texto */
+  .circle{position:absolute;width:40vmin;height:40vmin;border-radius:50%;
+    background:#111;transform:scale(0);box-shadow:0 0 0 1.2vmin #fff, 0 0 60px rgba(255,207,51,.4);
+    display:grid;place-items:center;overflow:hidden}
+  .mask{overflow:hidden;padding:0 .2em}
+  .word{display:flex;color:var(--txt);font-size:clamp(48px,12vmin,160px);
+    text-shadow:.04em .06em 0 var(--ring),.08em .12em 0 #000;letter-spacing:.02em}
+  .word span{display:inline-block;transform:translateY(130%) scaleY(1.4)}
+  .replay{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    font:inherit;font-size:16px;background:var(--ring2);color:#111;border:0;border-radius:999px;
+    padding:10px 22px;cursor:pointer;opacity:0;transition:opacity .4s}
+  .replay.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="rings" id="rings"></div>
+  <div class="circle" id="circle">
+    <div class="mask"><div class="word" id="word"></div></div>
+  </div>
+</div>
+<button class="replay" id="replay">▶ Repetir</button>
+
+<script>
+const word = document.getElementById('word');
+const circle = document.getElementById('circle');
+const rings = document.getElementById('rings');
+const replay = document.getElementById('replay');
+const TEXT = 'samuca';
+word.innerHTML = [...TEXT].map(c => `<span>${c}</span>`).join('');
+const letters = word.querySelectorAll('span');
+
+// Curvas cartoon: "back" (antecipação/overshoot) e elástico
+const backOut  = 'cubic-bezier(.34,1.56,.64,1)';
+const backIn   = 'cubic-bezier(.36,0,.66,-.56)';
+const smooth   = 'cubic-bezier(.65,0,.35,1)';
+
+function play(){
+  replay.classList.remove('show');
+  [rings,circle,...letters].forEach(el=>el.getAnimations().forEach(a=>a.cancel()));
+
+  // 1) Anéis: pop clássico do fim de desenho
+  rings.animate([
+    {transform:'scale(0) rotate(0deg)'},
+    {transform:'scale(.35) rotate(20deg)', offset:.6},
+    {transform:'scale(0) rotate(40deg)'}
+  ],{duration:1200,easing:smooth,fill:'forwards'});
+
+  // 2) Círculo: antecipação (encolhe), estoura e assenta com squash & stretch
+  const c = circle.animate([
+    {transform:'scale(0)'},
+    {transform:'scale(.15)', offset:.25},
+    {transform:'scale(.08)', offset:.35},          // antecipação
+    {transform:'scale(1.25,.85)', offset:.65},      // stretch
+    {transform:'scale(.92,1.08)', offset:.8},       // squash
+    {transform:'scale(1.03,.97)', offset:.9},
+    {transform:'scale(1)'}
+  ],{duration:1300,delay:600,easing:'ease-out',fill:'forwards'});
+
+  // 3) Expansão para revelar (círculo cresce até sair da tela)
+  c.finished.then(()=>{
+    circle.animate([{transform:'scale(1)'},{transform:'scale(3.2)'}],
+      {duration:900,easing:backOut,fill:'forwards'});
+
+    // 4) Letras sobem de baixo com overshoot e balanço cartoon
+    letters.forEach((l,i)=>{
+      l.animate([
+        {transform:'translateY(130%) scaleY(1.4) scaleX(.8)'},
+        {transform:'translateY(-18%) scaleY(1.15) scaleX(.9)', offset:.55},
+        {transform:'translateY(4%) scaleY(.82) scaleX(1.15)', offset:.75},
+        {transform:'translateY(-2%) scaleY(1.04) scaleX(.98)', offset:.9},
+        {transform:'translateY(0) scale(1)'}
+      ],{duration:900,delay:250+i*80,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
+    });
+
+    // 5) Wobble final + saída "That's all folks"
+    const last = letters[letters.length-1].getAnimations()[0];
+    last.finished.then(()=>{
+      word.animate([
+        {transform:'rotate(0)'},{transform:'rotate(-4deg)'},
+        {transform:'rotate(3deg)'},{transform:'rotate(0)'}
+      ],{duration:600,easing:'ease-in-out'});
+      setTimeout(()=>{
+        letters.forEach((l,i)=>l.animate(
+          [{transform:'translateY(0)'},{transform:'translateY(-20%)',offset:.3},{transform:'translateY(160%)'}],
+          {duration:600,delay:i*50,easing:backIn,fill:'forwards'}));
+        circle.animate([{transform:'scale(3.2)'},{transform:'scale(3.4)',offset:.3},{transform:'scale(0)'}],
+          {duration:800,delay:400,easing:backIn,fill:'forwards'})
+          .finished.then(()=>replay.classList.add('show'));
+      },1800);
+    });
+  });
+}
+replay.onclick = play;
+document.fonts.ready.then(play);
+</script>
+</body>
+</html>
