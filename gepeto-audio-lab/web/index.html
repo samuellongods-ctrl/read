@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101216">
+  <title>Gepeto Audio Lab — separação com foco em qualidade</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101216;--panel:#181b21;--line:#2b2f37;--muted:#9299a6;--text:#f1f2f5;--lime:#d7f990;font-family:Inter,Segoe UI,system-ui,sans-serif;color:var(--text);background:var(--bg)}
+    *{box-sizing:border-box}body{margin:0;display:flex;min-height:100vh}button,input,a{-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button,input{font:inherit}button,a.secondary{cursor:pointer}button{color:inherit}button:disabled{cursor:not-allowed;opacity:.4}button:focus-visible,a:focus-visible,input:focus-visible,.profile:has(input:focus-visible){outline:2px solid var(--lime);outline-offset:5px}button{transition:background .16s,transform .16s}button:not(:disabled):active{transform:translateY(1px)}[hidden]{display:none!important}.muted{color:var(--muted)}.small{font-size:12px;line-height:1.7}.sidebar{width:236px;flex-shrink:0;border-right:1px solid var(--line);padding:32px 22px;position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;background:#13151a}.logo{color:var(--text);text-decoration:none;display:flex;align-items:center;gap:12px;font-size:25px;font-weight:650;letter-spacing:-1px}.logo-mark{display:grid;place-content:center;position:relative;font-size:37px;background:var(--lime);color:#22291b;width:43px;height:43px;border-radius:12px;font-weight:800;line-height:1}.logo-mark span{position:absolute;right:2px;top:0;font-size:30px}.studio{display:block;font-size:9px;color:var(--muted);letter-spacing:4px;margin:2px 0 0 2px}.nav-caption,.history-heading{font-size:10px;font-weight:600;letter-spacing:1.7px;color:#777f8e;margin:56px 10px 14px}.nav-active{background:#252c20;border:1px solid #455137;border-radius:9px;padding:12px;text-align:left;color:var(--lime);font-size:13px}.nav-active span{margin-right:10px;font-size:18px}.history-heading{display:flex;justify-content:space-between;margin-top:32px}.history-heading span{letter-spacing:0}#history{overflow:auto;flex:1;padding:0 4px}.history-item{display:block;width:100%;border:1px solid transparent;background:none;text-align:left;padding:12px 8px;border-radius:8px;margin-bottom:3px}.history-item:hover{background:#20242c}.history-item.selected{border-color:#414c37;background:#21271d}.history-item strong{font-size:12px;font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.history-item small{font-size:10px;color:var(--muted);display:block;margin-top:5px}.sidebar-bottom{font-size:11px;color:#b9c4ae;border-top:1px solid var(--line);padding-top:20px;line-height:1.8}.sidebar-bottom p{font-size:10px;color:var(--muted);margin:4px 0 0}.local-dot{width:6px;height:6px;background:var(--lime);border-radius:50%;display:inline-block;margin-right:5px}main{margin-left:236px;width:calc(100% - 236px);padding:0 48px;max-width:1700px}.topbar{min-height:82px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}.topbar>span:first-child{letter-spacing:.4px}.slash{color:#4b535e;padding:0 14px}.device{font-size:10px;border:1px solid #35412c;background:#1b2318;color:#bed6a1;border-radius:20px;padding:7px 12px}.intro{padding:47px 0 35px}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:600;color:var(--lime)}h1{font-size:clamp(32px,3.1vw,49px);font-weight:550;line-height:1.15;letter-spacing:-1.9px;margin:15px 0 16px}h1 span{color:#a3abb9}.intro p{font-size:13px;color:var(--muted);line-height:1.9;margin:0}.section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:15px}h2{font-weight:550;font-size:15px;margin:0;letter-spacing:-.2px}.step{color:#8b94a4;font-size:11px;display:inline-block;border:1px solid #3a3f49;padding:3px 5px;border-radius:5px;margin-right:9px}.dropzone{border:1px dashed #49513f;min-height:126px;border-radius:13px;background:linear-gradient(115deg,#1b2119,#191d22);display:flex;align-items:center;padding:26px;gap:20px}.dropzone.dragging{border-color:var(--lime);background:#263020}.upload-icon{width:45px;height:45px;border-radius:12px;background:#2b3525;color:var(--lime);font-size:29px;text-align:center;line-height:42px}.dropzone h3{font-size:14px;font-weight:500;margin:0 0 8px;overflow-wrap:anywhere}.dropzone p{font-size:11px;color:var(--muted);margin:0}.dropzone>div:nth-child(2){flex:1;min-width:0}.secondary{display:inline-flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;border:1px solid #434953;background:#242932;color:#e7e9ee;text-decoration:none;border-radius:8px;padding:11px 15px;font-size:12px}.secondary:hover{background:#323844}#original{margin-top:14px;height:36px;width:100%}.modes-heading{margin-top:30px}.profiles{border:0;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.profile{padding:17px 15px 15px;background:var(--panel);border:1px solid var(--line);border-radius:11px;position:relative;cursor:pointer;min-width:0}.profile:has(input:checked){border-color:#a9c875;background:#21271d}.profile input{position:absolute;opacity:0;width:1px;height:1px}.profile-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:5px}.profile-icon{font-size:22px;color:#b2bcc9;line-height:1}.profile:has(input:checked) .profile-icon{color:var(--lime)}.tag{font-size:8px;letter-spacing:.5px;border:1px solid #424b3c;border-radius:4px;padding:4px 5px;color:#a9b69d}.profile strong{display:block;font-size:12px;font-weight:600;margin-bottom:10px}.profile>span:not(.profile-top){display:block;font-size:11px;line-height:1.8;color:#9da5b2}.profile small{display:block;font-size:9px;margin-top:17px;color:#aeb7a7}.run-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0}.run-row p{font-size:11px;line-height:1.9;margin:0;color:#c6ccd5}.primary{background:var(--lime);color:#202818;border:1px solid var(--lime);padding:12px 20px;border-radius:8px;font-size:12px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:26px;white-space:nowrap}.primary:hover:not(:disabled){background:#e4ffaf}.notice{display:flex;align-items:flex-start;gap:10px;color:#7f8997;font-size:10px;line-height:1.8;border-top:1px solid var(--line);padding-top:15px}.notice>span{font-size:15px}.notice p{margin:0}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px}.processing{padding:26px;margin-top:26px}.processing-top{display:flex;align-items:center;gap:16px}.processing-top>div{flex:1;min-width:0}.processing h2{margin-top:8px;overflow-wrap:anywhere}.spinner{width:28px;height:28px;border:2px solid #394032;border-top-color:var(--lime);border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0}@keyframes spin{to{transform:rotate(360deg)}}#stage{font-size:12px;color:#c3c9d1;margin:24px 0 15px}.processing-meta{display:flex;gap:20px;align-items:center;font-size:10px;color:var(--muted)}#elapsed{color:var(--lime);font-variant-numeric:tabular-nums}progress{width:100%;height:7px;margin:0 0 18px;accent-color:var(--lime)}#message{border:1px solid #795f35;background:#30291e;border-radius:10px;color:#edce9e;font-size:12px;line-height:1.7;padding:17px;margin-top:20px;white-space:pre-wrap;overflow-wrap:anywhere}.result-heading{margin:35px 0 18px}.result-heading h2{font-size:23px;margin-top:10px;overflow-wrap:anywhere}.result-heading p{margin-bottom:0}.transport{display:flex;align-items:center;gap:18px;padding:16px}.clock{font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap;color:#b6c0cd}.transport input{flex:1;min-width:40px}.text-button{border:0;background:none;font-size:11px;color:#a7b1bf;padding:7px;white-space:nowrap}input[type=range]{accent-color:var(--lime);cursor:pointer}.mixer-help{font-size:10px;color:var(--muted);margin:15px 0}.track{display:grid;grid-template-columns:170px 1fr 150px 35px;align-items:center;gap:18px;padding:19px 18px;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:9px}.track-name{display:flex;gap:10px;align-items:center;font-size:12px}.track-dot{width:7px;height:27px;border-radius:4px;background:var(--track-color);flex-shrink:0}.wave{width:100%;height:48px;color:var(--track-color);opacity:.8}.track-controls{display:grid;grid-template-columns:27px 27px 1fr;align-items:center;gap:7px}.toggle{border:1px solid #414854;border-radius:5px;width:27px;height:27px;background:#242a33;font-size:10px}.toggle[aria-pressed=true]{color:#172015;background:var(--lime);border-color:var(--lime)}.track-controls input{width:100%;min-width:35px}.track-muted .wave{opacity:.2}.track-download{text-decoration:none;color:#bcc6d4;text-align:center;font-size:21px}.track-download:hover{color:var(--lime)}footer{margin:38px 0 26px;padding-top:19px;border-top:1px solid var(--line);font-size:9px;letter-spacing:1.4px;color:#66717e;display:flex;justify-content:space-between;gap:15px}footer span{letter-spacing:0;font-size:10px}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .quality-option{display:flex;align-items:center;gap:8px;margin-top:18px;font-size:11px;color:var(--muted)}.quality-option input{accent-color:var(--lime)}.mobile-library{display:none}
+
+    /* Estilo do módulo YouTube */
+    .yt-section{margin-bottom:34px;padding:24px;background:linear-gradient(115deg,#181b21,#14171c);border:1px solid var(--line);border-radius:13px}
+    .yt-input-row{display:flex;gap:12px;margin:16px 0 14px}
+    .yt-input{flex:1;background:#22262e;border:1px solid #363b45;border-radius:8px;padding:12px 16px;color:#fff;font-size:13px}
+    .yt-input:focus{border-color:var(--lime);outline:none}
+    .yt-options{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;font-size:12px;color:#b6c0cd}
+    .yt-radios{display:flex;gap:18px;align-items:center}
+    .yt-radios label{display:flex;align-items:center;gap:6px;cursor:pointer}
+    .yt-radios input{accent-color:var(--lime)}
+    .yt-status{font-size:11px;margin-top:10px}
+    .yt-status.success{color:var(--lime)}
+    .yt-status.error{color:#ff8181}
+    .yt-status a{color:var(--lime);margin-left:8px}
+
+    @media(min-width:1450px){main{padding:0 70px}.profile{padding:22px}.intro{padding-top:60px}}
+    @media(max-width:1150px){main{padding:0 28px}.sidebar{width:205px;padding:30px 17px}main{margin-left:205px;width:calc(100% - 205px)}.profiles{grid-template-columns:repeat(2,1fr)}.profile>span:not(.profile-top) br{display:none}.profile-top{margin-bottom:12px}.profile small{margin-top:12px}.track{grid-template-columns:140px 1fr 125px 20px;gap:10px}.transport{gap:12px}}
+    @media(max-width:760px){body{display:block}.sidebar{position:static;width:100%;padding:17px 22px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;justify-content:space-between}.logo{font-size:21px}.logo-mark{width:36px;height:36px;font-size:30px}.nav-caption,.history-heading,#history,.sidebar-bottom{display:none}.nav-active{font-size:11px;padding:8px 12px}main{margin:0;width:100%;padding:0 20px}.topbar{min-height:60px;font-size:9px}.device{font-size:9px}.intro{padding:32px 0}.intro p{font-size:12px}h1{letter-spacing:-1.2px;font-size:35px}.section-heading{align-items:flex-start}.section-heading>.small{font-size:9px}.section-heading h2{font-size:13px}.dropzone{flex-wrap:wrap;padding:20px;gap:14px}.dropzone .secondary{width:100%;margin-top:3px}.dropzone h3{font-size:13px}.dropzone p{font-size:9px}.run-row{align-items:stretch;flex-direction:column;gap:16px}.run-row .primary{width:100%}.profile{padding:14px 12px}.profile strong{font-size:11px}.profile>span:not(.profile-top){font-size:10px}.profile small{font-size:8px}.transport{flex-wrap:wrap}.transport input{order:3;flex-basis:100%}.transport .primary{padding:11px 13px;gap:10px}.text-button{margin-left:auto}.track{grid-template-columns:1fr 130px 24px;gap:12px;padding:15px}.wave{grid-row:2;grid-column:1/-1;height:36px}.track-name{font-size:11px}.processing{padding:20px}.processing-meta{align-items:flex-start;gap:12px;line-height:1.7}.result-heading h2{font-size:17px}.result-heading .secondary{font-size:10px;padding:10px;gap:10px}.result-heading>div{min-width:0}footer{flex-direction:column;font-size:9px}.notice{font-size:9px}.mobile-library{display:flex;align-items:center;gap:12px;margin-top:15px;font-size:11px;color:var(--muted)}.mobile-library select{min-width:0;flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:8px;font:inherit}.yt-input-row{flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){button{transition:none}.spinner{animation:none;border-style:dashed}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="logo" href="/" aria-label="Gepeto Studio, início"><span class="logo-mark">g<span>∙</span></span><span>gepeto<span class="studio">STUDIO</span></span></a>
+    <div class="nav-caption">SEU ESPAÇO</div>
+    <button class="nav-active" id="new-project"><span>＋</span> Nova separação</button>
+    <div class="history-heading">BIBLIOTECA <span id="history-count">0</span></div>
+    <div id="history"><p class="muted small">Suas músicas processadas<br>aparecerão aqui.</p></div>
+    <div class="sidebar-bottom"><span class="local-dot"></span> Feito para rodar localmente<p>Seu áudio fica neste computador.</p></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>WORKSPACE <span class="slash">/</span> Separador de áudio</span><span class="device" id="connection">Conectando…</span></header>
+    <div class="mobile-library"><label for="project-select">Biblioteca</label><select id="project-select"><option value="">Selecione uma música processada</option></select></div>
+    <section class="intro"><div class="eyebrow">OUÇA CADA CAMADA.</div><h1>Sua música.<br><span>Em outras possibilidades.</span></h1><p>Separe a voz e os instrumentos. Encontre um detalhe,<br class="desktop"> pratique uma parte ou crie uma nova mistura.</p></section>
+
+    <!-- Módulo YouTube Downloader -->
+    <section class="yt-section">
+      <div class="section-heading">
+        <h2><span class="step">★</span> Importar ou Baixar do YouTube</h2>
+        <span class="muted small">Via yt-dlp local</span>
+      </div>
+      <div class="yt-input-row">
+        <input type="text" id="yt-url" class="yt-input" placeholder="Cole o link do YouTube aqui (ex: https://www.youtube.com/watch?v=...)" aria-label="Link do YouTube">
+        <button id="yt-download-btn" class="primary">Baixar Arquivo</button>
+      </div>
+      <div class="yt-options">
+        <div class="yt-radios">
+          <label><input type="radio" name="yt-format" value="mp3" checked> Áudio (MP3)</label>
+          <label><input type="radio" name="yt-format" value="mp4"> Vídeo (MP4)</label>
+        </div>
+        <label class="quality-option" style="margin-top:0;">
+          <input type="checkbox" id="yt-auto-import" checked> Enviar direto para separação após baixar (Apenas MP3)
+        </label>
+      </div>
+      <div id="yt-status" class="yt-status"></div>
+    </section>
+
+    <section id="setup" class="setup">
+      <div class="section-heading"><h2><span class="step">01</span> Comece com uma música</h2><span class="muted small">Até 150 MB · 15 minutos</span></div>
+      <div id="dropzone" class="dropzone">
+        <div class="upload-icon" aria-hidden="true">↥</div>
+        <div><h3 id="file-name">Solte seu áudio aqui</h3><p id="file-detail">MP3, WAV, FLAC, M4A, OGG, AAC, AIFF ou OPUS</p></div>
+        <button id="choose-file" class="secondary">Escolher arquivo <span>↗</span></button>
+        <input id="file" type="file" accept=".mp3,.wav,.flac,.m4a,.ogg,.aac,.aiff,.opus" hidden>
+      </div>
+      <audio id="original" controls hidden aria-label="Prévia do áudio original"></audio>
+      <div class="section-heading modes-heading"><h2><span class="step">02</span> Escolha as camadas</h2></div>
+      <fieldset class="profiles"><legend class="sr-only">Modo de separação</legend>
+        <label class="profile"><input type="radio" name="profile" value="four"><span class="profile-top"><span class="profile-icon">≋</span><span class="tag">4 FAIXAS</span></span><strong>Essencial</strong><span>Voz, bateria, baixo<br>e outros instrumentos.</span><small>Uma boa primeira experiência</small></label>
+        <label class="profile"><input type="radio" name="profile" value="six"><span class="profile-top"><span class="profile-icon">▥</span><span class="tag">6 FAIXAS</span></span><strong>Banda completa</strong><span>Voz, bateria, baixo,<br>guitarra, piano e outros.</span><small>Piano: separação experimental</small></label>
+        <label class="profile"><input type="radio" name="profile" value="vocal" checked><span class="profile-top"><span class="profile-icon">◉</span><span class="tag">2 FAIXAS</span></span><strong>Voz e instrumental</strong><span>Modelo dedicado à voz<br>e ao acompanhamento.</span><small>Prioriza qualidade · CPU mais lenta</small></label>
+        <label class="profile"><input type="radio" name="profile" value="backing"><span class="profile-top"><span class="profile-icon">♮</span><span class="tag">7 FAIXAS</span></span><strong>Vozes em detalhe</strong><span>Banda completa com vocal<br>principal e backing vocal.</span><small>Etapa extra · processamento maior</small></label>
+      </fieldset>
+      <label class="quality-option"><input id="legacy-mode" type="checkbox"> Usar separação rápida de voz e instrumental (Demucs)</label>
+      <div class="run-row"><p>O modo de qualidade usa MelBand RoFormer.<br><span class="muted">O processamento na CPU pode ser demorado. Modelos são baixados no primeiro uso.</span></p><button id="separate" class="primary" disabled>Separar áudio <span>→</span></button></div>
+      <div class="notice"><span aria-hidden="true">ⓘ</span><p>A IA estima as faixas: pode haver vazamentos entre instrumentos. Violino isolado não está disponível nesta versão. “Harmonia” corresponde ao acompanhamento instrumental; não é um instrumento separado.</p></div>
+    </section>
+    <section id="processing" class="processing panel" hidden aria-live="polite">
+      <div class="processing-top"><span class="spinner" id="spinner"></span><div><div class="eyebrow">PROCESSAMENTO LOCAL</div><h2 id="job-name"></h2></div><button class="secondary" id="cancel">Cancelar</button></div>
+      <p id="stage">Preparando…</p><progress id="upload-progress" max="100" hidden aria-label="Progresso da importação"></progress>
+      <div class="processing-meta"><span id="elapsed">00:00</span><span>Você pode deixar esta página aberta. O áudio permanece no computador.</span></div>
+    </section>
+    <div id="message" role="alert" hidden></div>
+    <section id="result" hidden>
+      <div class="section-heading result-heading"><div><div class="eyebrow">SUA MESA DE MIXAGEM</div><h2 id="result-name"></h2><p class="muted small" id="result-meta"></p></div><a id="download-all" class="secondary" download>Baixar todas <span>↓</span></a></div>
+      <div class="transport panel"><button id="play" class="primary" aria-label="Reproduzir todas as faixas">▶ Ouvir faixas</button><span id="clock" class="clock">0:00 / 0:00</span><input id="seek" type="range" min="0" max="100" value="0" step="0.01" aria-label="Posição da reprodução"><button id="reset-mix" class="text-button">Restaurar mix</button></div>
+      <p class="mixer-help">S = ouvir só esta faixa · M = silenciar · As faixas tocam sincronizadas. Comece com volume baixo.</p>
+      <div id="tracks"></div>
+    </section>
+    <footer>GEPETO STUDIO <span>Sem assinatura. Sem envio de áudio. Um espaço para experimentar.</span></footer>
+  </main>
+
+  <script>'use strict';
+const $ = id => document.getElementById(id);
+const state = {file:null, originalURL:null, job:null, loadedJob:null, tracks:[], context:null, master:null, sources:[], playing:false, offset:0, startedAt:0, duration:0, busy:false, loading:false, jobs:[], loadVersion:0, device:'CPU'};
+const colors = ['#d7f990','#b99bef','#81cce0','#f5bc82','#ee91ac','#9dafff','#9bd5bd'];
+const labels = {running:'Processando',done:'Pronto para ouvir',error:'Não concluído',cancelled:'Cancelado',uploading:'Importando'};
+function clock(seconds){const n=Math.max(0,Math.floor(seconds||0));return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
+function message(text){$('message').textContent=text;$('message').hidden=!text;}
+async function api(url,options={}){const response=await fetch(url,{...options,headers:{'X-Gepeto-Local':'1',...options.headers}});const data=await response.json();if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:'Não foi possível concluir a solicitação.');return data;}
+function setFile(file){
+  if(!file)return;
+  if(!/\.(mp3|wav|flac|m4a|ogg|aac|aiff|opus)$/i.test(file.name)){message('Escolha um arquivo de áudio compatível.');return;}
+  if(file.size>150*1024*1024){message('O limite é de 150 MB por arquivo.');return;}
+  if(!file.size){message('Este arquivo está vazio.');return;}
+  state.file=file;message('');$('file-name').textContent=file.name;$('file-detail').textContent=`${(file.size/1024/1024).toFixed(1)} MB · pronto para separar`;
+  if(state.originalURL)URL.revokeObjectURL(state.originalURL);
+  state.originalURL=URL.createObjectURL(file);$('original').src=state.originalURL;$('original').hidden=false;$('separate').disabled=state.busy;
+}
+$('choose-file').onclick=()=>$('file').click();$('file').onchange=event=>setFile(event.target.files[0]);
+for(const name of ['dragenter','dragover'])$('dropzone').addEventListener(name,event=>{event.preventDefault();$('dropzone').classList.add('dragging');});
+for(const name of ['dragleave','drop'])$('dropzone').addEventListener(name,event=>{event.preventDefault();$('dropzone').classList.remove('dragging');});
+$('dropzone').addEventListener('drop',event=>setFile(event.dataTransfer.files[0]));$('original').addEventListener('play',()=>{if(state.playing)pause();});
+
+// Integração com o Backend Local para Baixar do YouTube
+$('yt-download-btn').onclick = async () => {
+  const url = $('yt-url').value.trim();
+  const format = document.querySelector('input[name="yt-format"]:checked').value;
+  const autoImport = $('yt-auto-import').checked && format === 'mp3';
+  const status = $('yt-status');
+  const btn = $('yt-download-btn');
+
+  if(!url){
+    status.className = 'yt-status error';
+    status.textContent = 'Por favor, insira um link do YouTube válido.';
+    return;
+  }
+
+  btn.disabled = true;
+  status.className = 'yt-status';
+  status.textContent = 'Baixando e convertendo via yt-dlp... Aguarde.';
+
+  try {
+    const res = await fetch('/api/youtube', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Gepeto-Local': '1' },
+      body: JSON.stringify({ url: url, format: format, auto_import: autoImport })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.detail || data.error || 'Erro ao processar o download.');
+
+    status.className = 'yt-status success';
+    status.textContent = `Concluído: "${data.title}" salvo!`;
+
+    if(autoImport && data.download_url){
+      status.textContent += ' Carregando para separação...';
+      const fileRes = await fetch(data.download_url);
+      if(!fileRes.ok) throw new Error('O arquivo foi baixado, mas não pôde ser carregado na página.');
+      const blob = await fileRes.blob();
+      const file = new File([blob], data.file || `${data.title}.mp3`, { type: 'audio/mpeg' });
+      setFile(file);
+      $('setup').scrollIntoView({ behavior: 'smooth' });
+    } else if(data.download_url){
+      // Sem importação automática: oferece o arquivo para salvar neste aparelho
+      const link = document.createElement('a');
+      link.href = data.download_url;
+      link.download = data.file || '';
+      link.textContent = 'Salvar neste aparelho ↓';
+      status.append(link);
+    }
+  } catch (err) {
+    status.className = 'yt-status error';
+    status.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+function upload(form){return new Promise((resolve,reject)=>{
+  const xhr=new XMLHttpRequest();xhr.open('POST','/api/jobs');xhr.setRequestHeader('X-Gepeto-Local','1');
+  xhr.upload.onprogress=event=>{if(event.lengthComputable){$('upload-progress').value=event.loaded/event.total*100;$('stage').textContent=`Importando áudio · ${Math.round(event.loaded/event.total*100)}%`;}};
+  xhr.onerror=()=>reject(Error('A conexão com o aplicativo local foi interrompida.'));
+  xhr.onload=()=>{try{const data=JSON.parse(xhr.responseText);if(xhr.status>=400)reject(Error(data.detail||'Falha ao importar o áudio.'));else resolve(data);}catch{reject(Error('Resposta inválida do aplicativo local.'));}};
+  xhr.send(form);
+});}
+$('separate').onclick=async()=>{
+  if(!state.file||state.busy)return;
+  pause();$('original').pause();message('');state.busy=true;$('separate').disabled=true;
+  $('processing').hidden=false;$('job-name').textContent=state.file.name;$('stage').textContent='Importando áudio';$('upload-progress').hidden=false;$('upload-progress').value=0;$('cancel').disabled=true;$('elapsed').textContent='0:00';
+  const form=new FormData();form.append('file',state.file);let profile=document.querySelector('input[name=profile]:checked').value;if(profile==='vocal'&&$('legacy-mode').checked)profile='vocal_legacy';form.append('profile',profile);
+  try{state.job=await upload(form);showJob(state.job);await refresh();}catch(error){message(error.message);$('processing').hidden=true;state.busy=false;$('separate').disabled=!state.file;}finally{$('upload-progress').hidden=true;$('cancel').disabled=false;}
+};
+$('cancel').onclick=async()=>{if(!state.job)return;try{$('cancel').disabled=true;showJob(await api(`/api/jobs/${state.job.id}/cancel`,{method:'POST'}));await refresh();}catch(error){message(error.message);}finally{$('cancel').disabled=false;}};
+function showJob(job){
+  state.job=job;
+  $('processing').hidden=job.status!=='running';
+  if(job.status==='running'){$('job-name').textContent=job.name;$('stage').textContent=job.stage||'Iniciando o processamento local';$('elapsed').textContent=clock(Date.now()/1000-job.created);}
+  if(job.status==='error')message(`Não foi possível separar este áudio.\n${job.error}`);
+  if(job.status==='cancelled')message('Processamento cancelado. Você pode escolher outro arquivo ou tentar novamente.');
+  if(job.status==='done'&&state.loadedJob!==job.id)showResult(job);
+}
+function renderHistory(){
+  const signature=state.jobs.map(job=>job.id+job.status).join('|')+'|'+(state.job?.id||'');
+  if(signature===state.historySignature)return;
+  state.historySignature=signature;
+  $('history-count').textContent=state.jobs.length;
+  const library=$('project-select');
+  if(library.options.length!==state.jobs.length+1){library.replaceChildren(new Option('Selecione uma música processada',''));for(const job of state.jobs)library.add(new Option(job.name,job.id));}
+  library.value=state.job?.id||'';
+  if(!state.jobs.length)return;
+  $('history').replaceChildren();
+  for(const job of state.jobs){const button=document.createElement('button');button.className='history-item'+(state.job?.id===job.id?' selected':'');const title=document.createElement('strong');title.textContent=job.name;const detail=document.createElement('small');detail.textContent=labels[job.status]||job.status;button.append(title,detail);button.onclick=()=>{message('');showJob(job);renderHistory();};$('history').append(button);}
+}
+$('project-select').onchange=()=>{const job=state.jobs.find(item=>item.id===$('project-select').value);if(job){message('');showJob(job);renderHistory();}};
+async function refresh(){
+  state.jobs=await api('/api/jobs');state.busy=state.jobs.some(job=>['running','uploading'].includes(job.status));$('separate').disabled=state.busy||!state.file;
+  if(state.job){const updated=state.jobs.find(job=>job.id===state.job.id);if(updated)showJob(updated);}
+  else{const active=state.jobs.find(job=>job.status==='running');if(active)showJob(active);}
+  renderHistory();
+}
+async function poll(){try{await refresh();$('connection').textContent=`● Local · ${state.device}`;}catch{$('connection').textContent='Servidor desconectado';}setTimeout(poll,2000);}
+function trackURL(jobId,trackId){return `/api/jobs/${jobId}/tracks/${trackId}`;}
+function showResult(job){
+  pause();for(const track of state.tracks)track.gain?.disconnect();state.loadVersion++;state.loadedJob=job.id;state.duration=job.duration;state.offset=0;state.loading=false;state.tracks=[];$('result').hidden=false;$('result-name').textContent=job.name;$('result-meta').textContent=`${job.tracks.length} faixas · ${clock(job.duration)} · WAV sem compressão${job.provenance?.model?.label?' · '+job.provenance.model.label:''}`;$('download-all').href=`/api/jobs/${job.id}/zip`;$('play').textContent='▶ Ouvir faixas';$('play').disabled=false;$('tracks').replaceChildren();
+  job.tracks.forEach((track,index)=>{
+    const item={...track,url:trackURL(job.id,track.id),buffer:null,gain:null,volume:1,muted:false,solo:false};state.tracks.push(item);
+    const row=document.createElement('div');row.className='track';row.style.setProperty('--track-color',colors[index%colors.length]);item.row=row;
+    const name=document.createElement('div');name.className='track-name';const dot=document.createElement('span');dot.className='track-dot';const label=document.createElement('span');label.textContent=track.label;name.append(dot,label);
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 540 48');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');svg.classList.add('wave');const path=document.createElementNS(svg.namespaceURI,'path');const max=Math.max(.001,...track.peaks);path.setAttribute('d',track.peaks.map((p,i)=>{const h=Math.max(.5,p/max*22);return `M${i*3+1} ${24-h}v${h*2}`;}).join(' '));path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.5');svg.append(path);
+    const controls=document.createElement('div');controls.className='track-controls';
+    for(const [text,key,title] of [['S','solo','Ouvir somente'],['M','muted','Silenciar']]){const button=document.createElement('button');button.textContent=text;button.className='toggle';button.setAttribute('aria-label',`${title} ${track.label}`);button.setAttribute('aria-pressed','false');button.onclick=()=>{item[key]=!item[key];button.setAttribute('aria-pressed',String(item[key]));applyMix();};controls.append(button);item[key+'Button']=button;}
+    const volume=document.createElement('input');volume.type='range';volume.min=0;volume.max=100;volume.value=100;volume.setAttribute('aria-label',`Volume de ${track.label}`);volume.oninput=()=>{item.volume=Number(volume.value)/100;applyMix();};controls.append(volume);item.slider=volume;
+    const download=document.createElement('a');download.className='track-download';download.href=item.url;download.download=track.file;download.textContent='↓';download.setAttribute('aria-label',`Baixar ${track.label}`);
+    row.append(name,svg,controls,download);$('tracks').append(row);
+  });updateClock();
+}
+function ensureContext(){if(!state.context){state.context=new AudioContext();state.master=state.context.createGain();state.master.gain.value=.7;const limiter=state.context.createDynamicsCompressor();limiter.threshold.value=-2;limiter.knee.value=0;limiter.ratio.value=20;limiter.attack.value=.003;limiter.release.value=.15;state.master.connect(limiter);limiter.connect(state.context.destination);}return state.context;}
+async function loadBuffers(){
+  const context=ensureContext();const version=state.loadVersion;state.loading=true;$('play').disabled=true;
+  try{for(let index=0;index<state.tracks.length;index++){if(version!==state.loadVersion)return false;const track=state.tracks[index];if(track.buffer)continue;$('play').textContent=`Carregando ${index+1}/${state.tracks.length}`;const response=await fetch(track.url);if(!response.ok)throw Error('Não foi possível carregar uma das faixas.');const buffer=await context.decodeAudioData(await response.arrayBuffer());if(version!==state.loadVersion)return false;track.buffer=buffer;track.gain=context.createGain();track.gain.connect(state.master);}applyMix();return true;}
+  finally{if(version===state.loadVersion){state.loading=false;$('play').disabled=false;$('play').textContent='▶ Ouvir faixas';}}
+}
+function position(){return state.playing?Math.max(0,Math.min(state.duration,state.offset+state.context.currentTime-state.startedAt)):state.offset;}
+function pause(){if(state.playing)state.offset=position();state.playing=false;for(const source of state.sources){try{source.stop();}catch{}source.disconnect();}state.sources=[];if(!state.loading)$('play').textContent='▶ Ouvir faixas';$('play').setAttribute('aria-label','Reproduzir todas as faixas');}
+async function play(){
+  if(state.loading||!state.tracks.length)return;
+  try{const context=ensureContext();await context.resume();$('original').pause();if(!await loadBuffers())return;
+    if(state.offset>=state.duration-.05)state.offset=0;
+    const when=context.currentTime+.05;state.startedAt=when;state.playing=true;
+    for(const track of state.tracks){const source=context.createBufferSource();source.buffer=track.buffer;source.connect(track.gain);source.start(when,Math.min(state.offset,Math.max(0,track.buffer.duration-.001)));state.sources.push(source);}
+    $('play').textContent='Ⅱ Pausar';$('play').setAttribute('aria-label','Pausar reprodução');
+  }catch(error){pause();message('Não foi possível reproduzir as faixas. Você ainda pode baixá-las. '+error.message);}
+}
+function applyMix(){const hasSolo=state.tracks.some(track=>track.solo);for(const track of state.tracks){const audible=!track.muted&&(!hasSolo||track.solo);if(track.gain)track.gain.gain.setTargetAtTime(audible?track.volume:0,state.context.currentTime,.015);track.row.classList.toggle('track-muted',!audible);}}
+$('play').onclick=()=>state.playing?pause():play();
+$('seek').oninput=()=>{const wasPlaying=state.playing;pause();state.offset=Number($('seek').value)/100*state.duration;updateClock();if(wasPlaying)play();};$('reset-mix').onclick=()=>{for(const track of state.tracks){track.volume=1;track.solo=false;track.muted=false;track.slider.value=100;track.soloButton.setAttribute('aria-pressed','false');track.mutedButton.setAttribute('aria-pressed','false');}applyMix();};
+function updateClock(){const pos=Math.max(0,position());$('clock').textContent=`${clock(pos)} / ${clock(state.duration)}`;$('seek').value=state.duration?pos/state.duration*100:0;}
+setInterval(()=>{if(state.playing&&position()>=state.duration){pause();state.offset=0;}updateClock();},100);
+$('new-project').onclick=()=>{$('setup').scrollIntoView({behavior:'smooth'});$('choose-file').focus();};
+document.addEventListener('keydown',event=>{if(event.code==='Space'&&!['INPUT','BUTTON','A','AUDIO'].includes(document.activeElement.tagName)&&!$('result').hidden){event.preventDefault();$('play').click();}});
+fetch('/api/info').then(r=>r.json()).then(info=>{if(info.device)state.device=info.device;}).catch(()=>{});
+poll();
+  </script>
+</body>
+</html>

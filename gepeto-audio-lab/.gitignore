@@ -1,0 +1,4 @@
+.venv/
+dados/
+bin/
+__pycache__/
