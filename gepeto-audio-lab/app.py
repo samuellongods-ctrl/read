@@ -31,6 +31,12 @@ DOWNLOADS_DIR = DATA / "downloads"
 MODELS_DIR = DATA / "modelos"
 BIN_DIR = BASE / "bin"
 
+# Navegador de onde o yt-dlp lê os cookies do YouTube (evita o "confirme que você não é um robô").
+# Mude com a variável GEPETO_COOKIES (chrome, edge, firefox...) ou deixe vazia / "nenhum" para desligar.
+COOKIES_BROWSER = os.environ.get("GEPETO_COOKIES", "chrome").strip().lower()
+if COOKIES_BROWSER in ("", "nenhum", "none", "0"):
+    COOKIES_BROWSER = ""
+
 MAX_BYTES = 150 * 1024 * 1024
 MAX_SECONDS = 15 * 60
 AUDIO_EXT = {".mp3", ".wav", ".flac", ".m4a", ".ogg", ".aac", ".aiff", ".opus"}
@@ -437,9 +443,23 @@ def youtube(body: YoutubeRequest):
             "format": "bv*[ext=mp4]+ba[ext=m4a]/bv*+ba/b[ext=mp4]/b",
             "merge_output_format": "mp4",
         })
+    def download(opts: dict):
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            return ydl.extract_info(url, download=True)
+
     try:
-        with yt_dlp.YoutubeDL(options) as ydl:
-            info = ydl.extract_info(url, download=True)
+        if COOKIES_BROWSER:
+            try:
+                info = download({**options, "cookiesfrombrowser": (COOKIES_BROWSER,)})
+            except Exception as exc:  # noqa: BLE001
+                # Chrome aberto/bloqueado ou cookies ilegíveis: tenta de novo sem cookies.
+                if not re.search(r"cookie|dpapi|decrypt|database|profile", str(exc), re.I):
+                    raise
+                for leftover in folder.iterdir():
+                    leftover.unlink(missing_ok=True)
+                info = download(options)
+        else:
+            info = download(options)
     except Exception as exc:  # noqa: BLE001
         shutil.rmtree(folder, ignore_errors=True)
         text = re.sub(r"\x1b\[[0-9;]*m", "", str(exc)).replace("ERROR: ", "")
@@ -511,6 +531,8 @@ def main() -> None:
     if not FFMPEG:
         print("  ATENÇÃO: ffmpeg não encontrado. Rode o instalador novamente.")
     print(f"  Arquivos salvos em: {DATA}")
+    if COOKIES_BROWSER:
+        print(f"  YouTube: usando os cookies do navegador ({COOKIES_BROWSER})")
     print("  Para encerrar, feche esta janela ou aperte Ctrl+C.")
     print(line, flush=True)
 

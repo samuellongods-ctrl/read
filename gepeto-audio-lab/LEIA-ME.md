@@ -61,6 +61,13 @@ Se um link parar de funcionar, atualize o yt-dlp:
 .venv\Scripts\python.exe -m pip install -U yt-dlp
 ```
 
+O app usa os cookies do seu **Chrome** (`cookiesfrombrowser`) para o YouTube não pedir
+"confirme que você não é um robô". Se o Chrome estiver aberto e bloquear a leitura,
+ou não houver cookies, o download tenta de novo sem eles. Para usar outro navegador,
+defina `GEPETO_COOKIES=edge` (ou `firefox`) antes de iniciar; `GEPETO_COOKIES=nenhum` desliga.
+Qualquer aparelho da sua rede que abrir a página baixa usando a sua sessão do YouTube,
+então use só em rede de confiança.
+
 Baixe apenas conteúdo que você tem direito de usar.
 
 ## Onde ficam os arquivos
