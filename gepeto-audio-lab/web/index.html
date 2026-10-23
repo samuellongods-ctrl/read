@@ -54,6 +54,9 @@
         <input type="text" id="yt-url" class="yt-input" placeholder="Cole o link do YouTube aqui (ex: https://www.youtube.com/watch?v=...)" aria-label="Link do YouTube">
         <button id="yt-download-btn" class="primary">Baixar Arquivo</button>
       </div>
+      <div class="yt-input-row" style="margin-top:0">
+        <input type="text" id="yt-name" class="yt-input" placeholder="Renomear antes de salvar (opcional, vazio usa o título do vídeo)" aria-label="Nome do arquivo" maxlength="120">
+      </div>
       <div class="yt-options">
         <div class="yt-radios">
           <label><input type="radio" name="yt-format" value="mp3" checked> Áudio (MP3)</label>
@@ -145,7 +148,7 @@ $('yt-download-btn').onclick = async () => {
     const res = await fetch('/api/youtube', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Gepeto-Local': '1' },
-      body: JSON.stringify({ url: url, format: format, auto_import: autoImport })
+      body: JSON.stringify({ url: url, format: format, auto_import: autoImport, name: $('yt-name').value.trim() })
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.detail || data.error || 'Erro ao processar o download.');

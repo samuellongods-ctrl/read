@@ -61,6 +61,9 @@ Se um link parar de funcionar, atualize o yt-dlp:
 .venv\Scripts\python.exe -m pip install -U yt-dlp
 ```
 
+Antes de baixar, você pode digitar um nome em **"Renomear antes de salvar"**; se deixar
+vazio, o arquivo usa o título do vídeo. Esse nome também vira o nome da música na biblioteca.
+
 O app usa os cookies do seu **Chrome** (`cookiesfrombrowser`) para o YouTube não pedir
 "confirme que você não é um robô". Se o Chrome estiver aberto e bloquear a leitura,
 ou não houver cookies, o download tenta de novo sem eles. Para usar outro navegador,

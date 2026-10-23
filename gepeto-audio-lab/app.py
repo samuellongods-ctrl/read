@@ -404,6 +404,7 @@ class YoutubeRequest(BaseModel):
     url: str
     format: str = "mp3"
     auto_import: bool = False
+    name: str = ""
 
 
 @app.post("/api/youtube")
@@ -469,9 +470,14 @@ def youtube(body: YoutubeRequest):
         shutil.rmtree(folder, ignore_errors=True)
         raise HTTPException(500, "O download terminou, mas o arquivo final não foi gerado.")
     final = files[0]
+    custom = safe_name(body.name, "") if body.name.strip() else ""
+    if custom:
+        renamed = final.with_name(f"{custom}{final.suffix}")
+        final.replace(renamed)
+        final = renamed
     if body.format == "mp3" and final.stat().st_size > MAX_BYTES and body.auto_import:
         raise HTTPException(413, "O áudio baixado passa de 150 MB e não pode ser separado.")
-    title = (info or {}).get("title") or final.stem
+    title = custom or (info or {}).get("title") or final.stem
     return {"title": title, "file": final.name, "format": body.format,
             "download_url": f"/api/downloads/{download_id}/{final.name}"}
 
