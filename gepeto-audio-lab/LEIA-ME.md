@@ -32,6 +32,13 @@ Na primeira vez, o Windows pergunta se o Python pode usar a rede: marque
 clique com o botão direito em **`liberar-firewall.bat`** e escolha
 "Executar como administrador".
 
+### Abrir com um clique
+
+Dê dois cliques em **`criar-atalho.bat`** uma vez. Ele cria o atalho "Gepeto Audio Lab"
+na Área de Trabalho. Daí em diante é só clicar nele: o app abre minimizado e o navegador
+abre sozinho (se o app já estiver rodando, só abre o navegador). Para encerrar, feche a
+janela minimizada na barra de tarefas.
+
 ### Outra porta
 
 `iniciar.bat --porta 9000` (ou `--host 127.0.0.1` para usar só neste computador).
