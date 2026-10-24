@@ -24,6 +24,20 @@
     .yt-status.error{color:#ff8181}
     .yt-status a{color:var(--lime);margin-left:8px}
 
+
+    /* Arquivos entre aparelhos */
+    .share-section{margin-bottom:34px;padding:24px;background:linear-gradient(115deg,#181b21,#14171c);border:1px solid var(--line);border-radius:13px}
+    .share-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0 8px}
+    .share-section.dragging{border-color:var(--lime);background:#263020}
+    .share-status{font-size:11px;margin:8px 0 0;min-height:16px}
+    .share-status.error{color:#ff8181}.share-status.success{color:var(--lime)}
+    .share-list{margin-top:14px;display:grid;gap:8px}
+    .share-item{display:grid;grid-template-columns:1fr auto auto auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:#1c2027}
+    .share-item strong{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+    .share-item small{font-size:10px;color:var(--muted);white-space:nowrap}
+    .share-item .secondary{padding:8px 12px;gap:8px}
+    .share-item .danger{color:#ff9f9f}
+    @media(max-width:760px){.share-item{grid-template-columns:1fr auto auto}.share-item small{grid-column:1/-1;grid-row:2}.share-actions .secondary{width:100%}}
     @media(min-width:1450px){main{padding:0 70px}.profile{padding:22px}.intro{padding-top:60px}}
     @media(max-width:1150px){main{padding:0 28px}.sidebar{width:205px;padding:30px 17px}main{margin-left:205px;width:calc(100% - 205px)}.profiles{grid-template-columns:repeat(2,1fr)}.profile>span:not(.profile-top) br{display:none}.profile-top{margin-bottom:12px}.profile small{margin-top:12px}.track{grid-template-columns:140px 1fr 125px 20px;gap:10px}.transport{gap:12px}}
     @media(max-width:760px){body{display:block}.sidebar{position:static;width:100%;padding:17px 22px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;justify-content:space-between}.logo{font-size:21px}.logo-mark{width:36px;height:36px;font-size:30px}.nav-caption,.history-heading,#history,.sidebar-bottom{display:none}.nav-active{font-size:11px;padding:8px 12px}main{margin:0;width:100%;padding:0 20px}.topbar{min-height:60px;font-size:9px}.device{font-size:9px}.intro{padding:32px 0}.intro p{font-size:12px}h1{letter-spacing:-1.2px;font-size:35px}.section-heading{align-items:flex-start}.section-heading>.small{font-size:9px}.section-heading h2{font-size:13px}.dropzone{flex-wrap:wrap;padding:20px;gap:14px}.dropzone .secondary{width:100%;margin-top:3px}.dropzone h3{font-size:13px}.dropzone p{font-size:9px}.run-row{align-items:stretch;flex-direction:column;gap:16px}.run-row .primary{width:100%}.profile{padding:14px 12px}.profile strong{font-size:11px}.profile>span:not(.profile-top){font-size:10px}.profile small{font-size:8px}.transport{flex-wrap:wrap}.transport input{order:3;flex-basis:100%}.transport .primary{padding:11px 13px;gap:10px}.text-button{margin-left:auto}.track{grid-template-columns:1fr 130px 24px;gap:12px;padding:15px}.wave{grid-row:2;grid-column:1/-1;height:36px}.track-name{font-size:11px}.processing{padding:20px}.processing-meta{align-items:flex-start;gap:12px;line-height:1.7}.result-heading h2{font-size:17px}.result-heading .secondary{font-size:10px;padding:10px;gap:10px}.result-heading>div{min-width:0}footer{flex-direction:column;font-size:9px}.notice{font-size:9px}.mobile-library{display:flex;align-items:center;gap:12px;margin-top:15px;font-size:11px;color:var(--muted)}.mobile-library select{min-width:0;flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:8px;font:inherit}.yt-input-row{flex-direction:column}}
@@ -67,6 +81,22 @@
         </label>
       </div>
       <div id="yt-status" class="yt-status"></div>
+    </section>
+
+    <!-- Arquivos entre aparelhos -->
+    <section class="share-section" id="share" aria-labelledby="share-title">
+      <div class="section-heading">
+        <h2 id="share-title"><span class="step">⇄</span> Arquivos entre aparelhos</h2>
+        <span class="muted small">Anexe no celular, baixe no PC (e vice-versa)</span>
+      </div>
+      <div class="share-actions">
+        <button id="share-choose" class="secondary">Anexar arquivos <span>↥</span></button>
+        <input id="share-input" type="file" multiple hidden>
+        <span class="muted small">Qualquer tipo de arquivo · até 1 GB cada · também dá para arrastar aqui</span>
+      </div>
+      <progress id="share-progress" max="100" hidden aria-label="Progresso do envio"></progress>
+      <div id="share-status" class="share-status" role="status"></div>
+      <div id="share-list" class="share-list"></div>
     </section>
 
     <section id="setup" class="setup">
@@ -262,6 +292,45 @@ function updateClock(){const pos=Math.max(0,position());$('clock').textContent=`
 setInterval(()=>{if(state.playing&&position()>=state.duration){pause();state.offset=0;}updateClock();},100);
 $('new-project').onclick=()=>{$('setup').scrollIntoView({behavior:'smooth'});$('choose-file').focus();};
 document.addEventListener('keydown',event=>{if(event.code==='Space'&&!['INPUT','BUTTON','A','AUDIO'].includes(document.activeElement.tagName)&&!$('result').hidden){event.preventDefault();$('play').click();}});
+
+// Arquivos entre aparelhos
+function formatSize(bytes){if(bytes<1024)return `${bytes} B`;if(bytes<1048576)return `${(bytes/1024).toFixed(0)} KB`;if(bytes<1073741824)return `${(bytes/1048576).toFixed(1)} MB`;return `${(bytes/1073741824).toFixed(2)} GB`;}
+function shareStatus(text,kind=''){const box=$('share-status');box.className='share-status '+kind;box.textContent=text;}
+function uploadShared(files){return new Promise((resolve,reject)=>{
+  const form=new FormData();for(const file of files)form.append('files',file);
+  const xhr=new XMLHttpRequest();xhr.open('POST','/api/files');xhr.setRequestHeader('X-Gepeto-Local','1');
+  xhr.upload.onprogress=event=>{if(event.lengthComputable){$('share-progress').value=event.loaded/event.total*100;shareStatus(`Enviando · ${Math.round(event.loaded/event.total*100)}%`);}};
+  xhr.onerror=()=>reject(Error('A conexão com o aplicativo local foi interrompida.'));
+  xhr.onload=()=>{try{const data=JSON.parse(xhr.responseText);if(xhr.status>=400)reject(Error(typeof data.detail==='string'?data.detail:'Falha ao enviar.'));else resolve(data);}catch{reject(Error('Resposta inválida do aplicativo local.'));}};
+  xhr.send(form);
+});}
+async function sendShared(files){
+  files=[...files].filter(file=>file.size>0);if(!files.length){shareStatus('Os arquivos escolhidos estão vazios.','error');return;}
+  $('share-choose').disabled=true;$('share-progress').hidden=false;$('share-progress').value=0;
+  try{await uploadShared(files);shareStatus(`${files.length===1?'Arquivo enviado':'Arquivos enviados'}.`,'success');await refreshShared();}
+  catch(error){shareStatus(error.message,'error');}
+  finally{$('share-choose').disabled=false;$('share-progress').hidden=true;$('share-input').value='';}
+}
+async function refreshShared(){
+  let list;try{list=await api('/api/files');}catch{return;}
+  const signature=list.map(item=>item.id).join('|');if(signature===state.shareSignature)return;state.shareSignature=signature;
+  const box=$('share-list');box.replaceChildren();
+  if(!list.length){const empty=document.createElement('p');empty.className='muted small';empty.textContent='Nenhum arquivo por aqui ainda.';box.append(empty);return;}
+  for(const item of list){
+    const row=document.createElement('div');row.className='share-item';
+    const name=document.createElement('strong');name.textContent=item.name;name.title=item.name;
+    const meta=document.createElement('small');meta.textContent=`${formatSize(item.size)} · ${new Date(item.created*1000).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    const download=document.createElement('a');download.className='secondary';download.href=`/api/files/${item.id}/download`;download.download=item.name;download.textContent='Baixar ↓';
+    const remove=document.createElement('button');remove.className='secondary danger';remove.textContent='Apagar';remove.setAttribute('aria-label',`Apagar ${item.name}`);
+    remove.onclick=async()=>{if(!confirm(`Apagar "${item.name}" do computador?`))return;try{await api(`/api/files/${item.id}`,{method:'DELETE'});state.shareSignature=null;await refreshShared();}catch(error){shareStatus(error.message,'error');}};
+    row.append(name,meta,download,remove);box.append(row);
+  }
+}
+$('share-choose').onclick=()=>$('share-input').click();$('share-input').onchange=event=>sendShared(event.target.files);
+for(const name of ['dragenter','dragover'])$('share').addEventListener(name,event=>{event.preventDefault();$('share').classList.add('dragging');});
+for(const name of ['dragleave','drop'])$('share').addEventListener(name,event=>{event.preventDefault();$('share').classList.remove('dragging');});
+$('share').addEventListener('drop',event=>sendShared(event.dataTransfer.files));
+refreshShared();setInterval(refreshShared,4000);
 fetch('/api/info').then(r=>r.json()).then(info=>{if(info.device)state.device=info.device;}).catch(()=>{});
 poll();
   </script>

@@ -28,6 +28,7 @@ WEB = BASE / "web"
 DATA = Path(os.environ.get("GEPETO_DADOS", BASE / "dados"))
 JOBS_DIR = DATA / "trabalhos"
 DOWNLOADS_DIR = DATA / "downloads"
+FILES_DIR = DATA / "arquivos"
 MODELS_DIR = DATA / "modelos"
 BIN_DIR = BASE / "bin"
 
@@ -38,11 +39,12 @@ if COOKIES_BROWSER in ("", "nenhum", "none", "0"):
     COOKIES_BROWSER = ""
 
 MAX_BYTES = 150 * 1024 * 1024
+MAX_SHARED_BYTES = 1024 * 1024 * 1024  # limite de cada arquivo enviado em "Arquivos entre aparelhos"
 MAX_SECONDS = 15 * 60
 AUDIO_EXT = {".mp3", ".wav", ".flac", ".m4a", ".ogg", ".aac", ".aiff", ".opus"}
 PROFILES = {"four", "six", "vocal", "vocal_legacy", "backing"}
 
-for folder in (JOBS_DIR, DOWNLOADS_DIR, MODELS_DIR):
+for folder in (JOBS_DIR, DOWNLOADS_DIR, FILES_DIR, MODELS_DIR):
     folder.mkdir(parents=True, exist_ok=True)
 
 
@@ -492,6 +494,74 @@ def get_download(download_id: str, filename: str):
         raise HTTPException(404, "Arquivo não encontrado.")
     media = "audio/mpeg" if path.suffix.lower() == ".mp3" else "video/mp4"
     return FileResponse(path, media_type=media, filename=path.name)
+
+
+# ---------------------------------------------------------------- arquivos entre aparelhos
+
+def shared_entry(folder: Path) -> dict | None:
+    items = [item for item in folder.iterdir() if item.is_file()] if folder.is_dir() else []
+    if not items:
+        return None
+    path = items[0]
+    stat = path.stat()
+    return {"id": folder.name, "name": path.name, "size": stat.st_size, "created": stat.st_mtime}
+
+
+@app.get("/api/files")
+def list_shared_files():
+    entries = [entry for entry in (shared_entry(folder) for folder in FILES_DIR.iterdir()) if entry]
+    return sorted(entries, key=lambda entry: entry["created"], reverse=True)
+
+
+@app.post("/api/files")
+async def upload_shared_files(files: list[UploadFile] = File(...)):
+    saved = []
+    for upload in files:
+        name = safe_name(Path(upload.filename or "arquivo").name, "arquivo")
+        file_id = uuid.uuid4().hex[:12]
+        folder = FILES_DIR / file_id
+        folder.mkdir(parents=True)
+        target = folder / name
+        size = 0
+        too_big = False
+        with open(target, "wb") as out:
+            while chunk := await upload.read(1024 * 1024):
+                size += len(chunk)
+                if size > MAX_SHARED_BYTES:
+                    too_big = True
+                    break
+                out.write(chunk)
+        if too_big or not size:
+            shutil.rmtree(folder, ignore_errors=True)
+            if too_big:
+                raise HTTPException(413, f"O arquivo \"{name}\" passa do limite de 1 GB.")
+            raise HTTPException(400, f"O arquivo \"{name}\" está vazio.")
+        saved.append(shared_entry(folder))
+    return saved
+
+
+@app.get("/api/files/{file_id}/download")
+def download_shared_file(file_id: str):
+    if not re.fullmatch(r"[0-9a-f]{12}", file_id):
+        raise HTTPException(404, "Arquivo não encontrado.")
+    entry = shared_entry(FILES_DIR / file_id)
+    if not entry:
+        raise HTTPException(404, "Arquivo não encontrado.")
+    # Sempre como anexo e sem adivinhar o tipo, para um HTML enviado nunca rodar dentro do app.
+    return FileResponse(FILES_DIR / file_id / entry["name"], filename=entry["name"],
+                        media_type="application/octet-stream",
+                        headers={"X-Content-Type-Options": "nosniff"})
+
+
+@app.delete("/api/files/{file_id}")
+def delete_shared_file(file_id: str):
+    if not re.fullmatch(r"[0-9a-f]{12}", file_id):
+        raise HTTPException(404, "Arquivo não encontrado.")
+    folder = FILES_DIR / file_id
+    if not folder.is_dir():
+        raise HTTPException(404, "Arquivo não encontrado.")
+    shutil.rmtree(folder, ignore_errors=True)
+    return {"ok": True}
 
 
 # ---------------------------------------------------------------- início

@@ -80,10 +80,18 @@ então use só em rede de confiança.
 
 Baixe apenas conteúdo que você tem direito de usar.
 
+## Arquivos entre aparelhos
+
+Na seção **"Arquivos entre aparelhos"** você anexa qualquer arquivo (até 1 GB cada) pelo
+celular ou pelo PC e baixa no outro aparelho abrindo a mesma página. Cada arquivo tem os
+botões **Baixar** e **Apagar**. Qualquer aparelho da rede que abrir a página vê a lista,
+então use só em Wi-Fi de confiança.
+
 ## Onde ficam os arquivos
 
 - `dados\trabalhos\<id>\faixas\` as faixas WAV de cada música
 - `dados\downloads\` os downloads do YouTube
+- `dados\arquivos\` os arquivos enviados em "Arquivos entre aparelhos"
 - `dados\modelos\` os modelos de IA
 
 Para limpar a biblioteca, feche o app e apague a pasta `dados\trabalhos`.
