@@ -334,5 +334,6 @@ refreshShared();setInterval(refreshShared,4000);
 fetch('/api/info').then(r=>r.json()).then(info=>{if(info.device)state.device=info.device;}).catch(()=>{});
 poll();
   </script>
+  <script src="/links.js" defer></script>
 </body>
 </html>

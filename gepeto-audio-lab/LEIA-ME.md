@@ -87,11 +87,20 @@ celular ou pelo PC e baixa no outro aparelho abrindo a mesma página. Cada arqui
 botões **Baixar** e **Apagar**. Qualquer aparelho da rede que abrir a página vê a lista,
 então use só em Wi-Fi de confiança.
 
+## Links salvos
+
+A seção **"Links salvos"** guarda seus sites favoritos, no estilo da lista de servidores do
+Minecraft. Cole o link, aperte **Salvar** e o app busca o nome e o ícone do site (precisa de
+internet nessa hora). Cada linha tem o botão **Acessar site**, e **＋ Adicionar outro** abre
+o campo para mais um link. A lista é a mesma no celular e no PC. Os links ficam em
+`dados\links.json`. Sites da rede local (como o roteador) são salvos, mas sem buscar ícone.
+
 ## Onde ficam os arquivos
 
 - `dados\trabalhos\<id>\faixas\` as faixas WAV de cada música
 - `dados\downloads\` os downloads do YouTube
 - `dados\arquivos\` os arquivos enviados em "Arquivos entre aparelhos"
+- `dados\links.json` e `dados\links_icones\` os links salvos e seus ícones
 - `dados\modelos\` os modelos de IA
 
 Para limpar a biblioteca, feche o app e apague a pasta `dados\trabalhos`.
