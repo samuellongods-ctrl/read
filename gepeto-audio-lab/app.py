@@ -283,6 +283,9 @@ app = FastAPI(title="Gepeto Audio Lab", version=VERSION, docs_url=None, redoc_ur
 import links  # noqa: E402  (links salvos: rotas /api/links e /links.js)
 app.include_router(links.router)
 
+import icons  # noqa: E402  (favicon do app)
+app.include_router(icons.router)
+
 
 @app.middleware("http")
 async def local_header(request: Request, call_next):
