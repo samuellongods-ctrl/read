@@ -63,6 +63,8 @@ select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);b
 <script>
 const $=id=>document.getElementById(id);
 let ctx,stream,src,gain,analyser,raf,wake,audioEl,dest;
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+try{ if(navigator.audioSession) navigator.audioSession.type='play-and-record'; }catch(e){}
 const btn=$('btn');
 
 async function start(){
@@ -73,7 +75,16 @@ async function start(){
     src=ctx.createMediaStreamSource(stream);
     gain=ctx.createGain(); gain.gain.value=$('vol').value/100;
     analyser=ctx.createAnalyser(); analyser.fftSize=512;
-    src.connect(gain); gain.connect(analyser); gain.connect(ctx.destination);
+    src.connect(gain); gain.connect(analyser);
+    if(isIOS){
+      // iPhone: tocar por um elemento <audio> deixa o iOS mandar para o Bluetooth
+      dest=ctx.createMediaStreamDestination(); gain.connect(dest);
+      audioEl=new Audio(); audioEl.playsInline=true; audioEl.autoplay=true;
+      audioEl.srcObject=dest.stream; document.body.appendChild(audioEl);
+      await audioEl.play().catch(()=>{});
+    } else {
+      gain.connect(ctx.destination);
+    }
     await ctx.resume();
     btn.classList.add('on'); btn.setAttribute('aria-pressed','true'); $('btnTxt').textContent='Desligar';
     $('status').textContent='Ao vivo. Pode falar.';
@@ -88,6 +99,7 @@ async function start(){
 function stop(){
   cancelAnimationFrame(raf);
   stream?.getTracks().forEach(t=>t.stop());
+  if(audioEl){audioEl.pause();audioEl.srcObject=null;audioEl.remove();audioEl=null}
   ctx?.close(); ctx=null; stream=null;
   wake?.release?.(); wake=null;
   btn.classList.remove('on'); btn.setAttribute('aria-pressed','false'); $('btnTxt').textContent='Ligar';
