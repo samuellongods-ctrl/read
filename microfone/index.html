@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Microfone ao Vivo</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#14161a;--mut:#5d6470;--ac:#e5484d;--ok:#2f9e60;--line:#dfe2e7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--tx:#eef0f3;--mut:#9aa1ad;--line:#2a2f38}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--tx:#eef0f3;--mut:#9aa1ad;--line:#2a2f38}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:24px 16px}
+main{width:100%;max-width:420px;display:flex;flex-direction:column;gap:16px}
+h1{font-size:22px;margin:0}
+p{margin:0;color:var(--mut);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+#btn{all:unset;cursor:pointer;align-self:center;width:180px;height:180px;border-radius:50%;background:var(--ac);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:0 0 0 0 rgba(229,72,77,.5);transition:transform .1s}
+#btn:active{transform:scale(.96)}
+#btn.on{background:var(--ok);animation:pulse 1.6s infinite}
+#btn svg{width:56px;height:56px;margin-bottom:6px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,158,96,.5)}70%{box-shadow:0 0 0 22px rgba(47,158,96,0)}100%{box-shadow:0 0 0 0 rgba(47,158,96,0)}}
+.meter{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ok),#f5a623,var(--ac));transition:width 60ms linear}
+label{font-size:14px;font-weight:600;display:flex;justify-content:space-between}
+input[type=range]{width:100%}
+select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:15px}
+.row{display:flex;align-items:center;gap:8px;font-size:14px}
+.warn{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.4)}
+.warn p{color:var(--tx)}
+#status{text-align:center;font-size:14px;min-height:1.4em}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <h1>Microfone ao Vivo</h1>
+    <p>Fale no microfone do celular e o som sai na hora no fone ou caixa de som conectada.</p>
+  </div>
+
+  <button id="btn" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+    <span id="btnTxt">Ligar</span>
+  </button>
+  <div id="status">Toque em Ligar e permita o microfone.</div>
+
+  <div class="card">
+    <div class="meter"><i id="lvl"></i></div>
+    <label for="vol">Volume <span id="volTxt">100%</span></label>
+    <input id="vol" type="range" min="0" max="300" value="100">
+    <div id="outBox" hidden>
+      <label for="out">Saída de som</label>
+      <select id="out"></select>
+    </div>
+    <div class="row"><input type="checkbox" id="nr"><label for="nr" style="font-weight:400">Reduzir ruído (aumenta um pouco o atraso)</label></div>
+  </div>
+
+  <div class="card warn">
+    <p><b>Evite microfonia:</b> use com fone ou caixa Bluetooth longe do celular. Se a saída for o próprio alto-falante do celular, vai apitar.</p>
+    <p>A saída é a que o celular estiver usando. Para trocar, conecte o Bluetooth antes de tocar em Ligar.</p>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let ctx,stream,src,gain,analyser,raf,wake,audioEl,dest;
+const btn=$('btn');
+
+async function start(){
+  try{
+    const nr=$('nr').checked;
+    stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:nr,noiseSuppression:nr,autoGainControl:false,latency:0}});
+    ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:0});
+    src=ctx.createMediaStreamSource(stream);
+    gain=ctx.createGain(); gain.gain.value=$('vol').value/100;
+    analyser=ctx.createAnalyser(); analyser.fftSize=512;
+    src.connect(gain); gain.connect(analyser); gain.connect(ctx.destination);
+    await ctx.resume();
+    btn.classList.add('on'); btn.setAttribute('aria-pressed','true'); $('btnTxt').textContent='Desligar';
+    $('status').textContent='Ao vivo. Pode falar.';
+    meter(); listOutputs();
+    try{wake=await navigator.wakeLock?.request('screen')}catch(e){}
+  }catch(e){
+    stop();
+    $('status').textContent = e.name==='NotAllowedError' ? 'Permissão do microfone negada. Libere nas configurações do navegador.' :
+      (!window.isSecureContext ? 'Abra por um link https:// (o navegador só libera o microfone em https).' : 'Não consegui abrir o microfone: '+e.message);
+  }
+}
+function stop(){
+  cancelAnimationFrame(raf);
+  stream?.getTracks().forEach(t=>t.stop());
+  ctx?.close(); ctx=null; stream=null;
+  wake?.release?.(); wake=null;
+  btn.classList.remove('on'); btn.setAttribute('aria-pressed','false'); $('btnTxt').textContent='Ligar';
+  $('lvl').style.width='0'; $('status').textContent='Desligado.';
+}
+function meter(){
+  const d=new Uint8Array(analyser.fftSize);
+  (function loop(){
+    analyser.getByteTimeDomainData(d);
+    let m=0; for(const v of d) m=Math.max(m,Math.abs(v-128));
+    $('lvl').style.width=Math.min(100,m/128*140)+'%';
+    raf=requestAnimationFrame(loop);
+  })();
+}
+async function listOutputs(){
+  if(!ctx || typeof ctx.setSinkId!=='function') return;
+  const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audiooutput');
+  if(devs.length<2) return;
+  const sel=$('out'); sel.innerHTML='';
+  devs.forEach((d,i)=>{const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('Saída '+(i+1));sel.appendChild(o)});
+  $('outBox').hidden=false;
+}
+$('out').onchange=e=>{ctx?.setSinkId(e.target.value==='default'?'':e.target.value).catch(()=>{})};
+$('vol').oninput=e=>{$('volTxt').textContent=e.target.value+'%'; if(gain) gain.gain.setTargetAtTime(e.target.value/100,ctx.currentTime,.02)};
+$('nr').onchange=()=>{if(ctx){stop();start()}};
+btn.onclick=()=>ctx?stop():start();
+document.addEventListener('visibilitychange',async()=>{if(ctx&&document.visibilityState==='visible'){try{wake=await navigator.wakeLock?.request('screen')}catch(e){}}});
+navigator.mediaDevices?.addEventListener?.('devicechange',()=>ctx&&listOutputs());
+</script>
+</body>
+</html>
